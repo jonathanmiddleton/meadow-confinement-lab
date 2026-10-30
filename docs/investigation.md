@@ -163,10 +163,11 @@ is evidence that a reachable operation was denied.
 
 ## Investigation sequence
 
-The current next integration step is the persistent worker described above:
-read/write/command requests through a separate process under an actor policy,
-followed by provider integration. The broader sequence below is a coverage
-inventory, not a requirement to complete every generic probe before useful work.
+The persistent worker described above passed its controlled read/write/command
+contract on both development platforms. The next integration step connects that
+worker behind a real Copilot/Bridge turn while preserving the provider/tool
+authority split. The broader sequence below is a coverage inventory, not a
+requirement to complete every generic probe before useful work.
 
 1. **Specify one candidate.** Pin source and license, identify the actual kernel
    enforcement primitive, enumerate writable grants and broker interfaces, and

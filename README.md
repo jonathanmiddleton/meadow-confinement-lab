@@ -5,11 +5,12 @@ on Windows and macOS. The deployment target is ordinary, non-elevated Python
 with no required WSL, container service, compiler, or administrator setup.
 
 **Current result:** on the tested Windows 11 ARM64 and macOS 15.6 ARM64 hosts,
-Python and the platform shell started under MXC, wrote inside the workspace, and
-received OS denials for direct creation and overwrite of sibling files. Windows
-used native process containers and PowerShell; macOS used Seatbelt and `/bin/sh`.
-Matching unconfined controls could perform those same outside writes. This is a
-narrow feasibility result; full actor confinement remains unestablished.
+a persistent worker completed repeated read/write/command requests under MXC:
+workspace read/write, reference files read-only, and private-file reads/writes
+denied by the OS. A child and grandchild obeyed the same sampled permissions,
+while the trusted controller retained private logging access. Matching unconfined
+controls and extracted-package runs passed. This qualifies the controlled worker
+mechanism; production Bridge integration and full actor confinement remain open.
 See [results and limits](docs/results.md).
 
 ## Persistent tool worker

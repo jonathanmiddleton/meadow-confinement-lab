@@ -252,8 +252,11 @@ their output pipes and required no forced termination. This demonstrates the
 controlled worker mechanism, not the production Bridge integration or a complete
 security boundary against hostile tools.
 
-Final source runs were `windows-arm64-02` and `windows-x64-02`. The standard-library
-ZIP build, fresh extraction, and `portable arm64-02` packaged run also exited
+Final regression used functional candidate
+`1003cfa8874459046c4c8f05586878d1c8fb84dd`, including the fixture canonicalization
+described in the macOS entry below. Source runs were `windows-arm64-03` and
+`windows-x64-03`. The standard-library ZIP build, fresh extraction, and
+`portable arm64-03` packaged run also exited
 **0**. Source and extracted package hashes matched. Both macOS binary ZIP entries
 retained `0755` metadata. The commands ran with PATH containing only Windows
 System32 and Windows PowerShell; no compiler, package installation, elevation or
@@ -262,10 +265,16 @@ passed**, with the same **2 native POSIX-shell cases skipped** on Windows.
 
 Receipts, raw output, policies, transcripts, fixture hashes, native logs, bundle
 identity and independent observations are retained under
-`C:\Users\jonathanmiddleton\.codex\evidence\mclworker`; the disposable roots were
+`C:\Users\jonathanmiddleton\.codex\evidence\mclworker\final-1003cfa`; prior
+candidate runs remain in the parent evidence directory. The disposable roots were
 under `C:\Temp\Codex\tasks\mclworker`. The two native Windows binaries and upstream
 revision are unchanged from the identities above. Separate macOS worker
 execution evidence follows; earlier direct-write passes do not qualify it.
+
+The final Windows and macOS runs used the same functional source. No matching
+owned Windows validation process remained after the last run. Subsequent result
+documentation changes do not change the tested functional source; native x64
+Windows hardware and Intel macOS remain unqualified by these ARM64-host runs.
 
 ## Persistent-worker macOS validation (2026-10-30)
 
