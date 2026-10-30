@@ -17,12 +17,26 @@ def main(argv: list[str] | None = None) -> int:
     experiment = commands.add_parser("experiment", help="Run controlled Windows or macOS direct-write witnesses")
     experiment.add_argument("--output-root", type=Path, required=True, help="New directory for disposable fixtures and retained evidence")
     experiment.add_argument("--executor", type=Path, help="Override the bundled, manifest-verified executor")
+    worker = commands.add_parser("worker-experiment", help="Exercise persistent confined read/write/command tool execution")
+    worker.add_argument("--output-root", type=Path, required=True, help="New directory for disposable fixtures and retained evidence")
+    worker.add_argument("--executor", type=Path, help="Override the bundled, manifest-verified executor")
     bundle = commands.add_parser("build", help="Build a portable ZIP using Python only")
     bundle.add_argument("--output", type=Path, required=True, help="New output ZIP file")
     args = parser.parse_args(argv)
 
     repo_root = Path(__file__).resolve().parents[2]
     try:
+        if args.command == "worker-experiment":
+            from confinement_lab.worker_experiment import run_worker_experiment
+            report = run_worker_experiment(repo_root, args.output_root, args.executor)
+            print(f"Persistent-worker experiment: {report['status']}")
+            print(f"Report: {args.output_root / 'report.json'}")
+            for case in report["cases"]:
+                print(f"  {case['name']}: {case['evaluation']['status']} (qualifies: {case['qualifies']})")
+                for failure in case["evaluation"]["failures"]:
+                    print(f"    {failure}")
+            print("This tests a controlled worker mechanism; full actor confinement remains unestablished.")
+            return 0 if report["status"] == "pass" else 1
         if args.command == "experiment":
             from confinement_lab.experiment import run_experiment
             report = run_experiment(repo_root, args.output_root, args.executor)

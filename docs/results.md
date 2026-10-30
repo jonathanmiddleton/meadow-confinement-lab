@@ -226,3 +226,43 @@ identifies the tested ZIP by SHA-256. The implementation now has comparable
 ordinary-file feasibility evidence on the two ARM64 development platforms;
 the remaining limits above still apply. Subsequent documentation-only recording
 does not change the tested functional source.
+
+## Persistent tool worker: Windows (2026-10-30)
+
+The [persistent-worker experiment](worker-experiment.md) passed on the same
+Windows ARM64 development VM with CPython 3.13.15 and a non-elevated controller.
+Both the native ARM64 helper and the x64 helper under emulation completed the
+control and enforcement cases. Each case used one worker for all 11 requests.
+
+| Operation | Unconfined control | Confined worker |
+| --- | --- | --- |
+| Workspace read/create/write and later read | Correct bytes | Correct bytes |
+| Reference read | Correct bytes | Correct bytes |
+| Reference overwrite | Succeeded | `PermissionError`, errno 13 |
+| Private read/overwrite/create | Succeeded | `PermissionError`, errno 13 |
+| Child and grandchild operations in all three roots | All succeeded | Same allowed/denied outcomes as worker |
+| Controller private logging between requests | Succeeded | Succeeded |
+
+The controller independently verified exact file bytes, unchanged protected
+files and absence of the private new file. The worker remained useful after
+denials; command output returned through the request protocol. Both helpers
+reported the matching worker PID through their `processcontainer` /
+`base-container` zero-exit event. All native invocations exited **0**, completed
+their output pipes and required no forced termination. This demonstrates the
+controlled worker mechanism, not the production Bridge integration or a complete
+security boundary against hostile tools.
+
+Final source runs were `windows-arm64-02` and `windows-x64-02`. The standard-library
+ZIP build, fresh extraction, and `portable arm64-02` packaged run also exited
+**0**. Source and extracted package hashes matched. Both macOS binary ZIP entries
+retained `0755` metadata. The commands ran with PATH containing only Windows
+System32 and Windows PowerShell; no compiler, package installation, elevation or
+native asset rebuild was used. The Python unit suite ran **34 tests**: **32
+passed**, with the same **2 native POSIX-shell cases skipped** on Windows.
+
+Receipts, raw output, policies, transcripts, fixture hashes, native logs, bundle
+identity and independent observations are retained under
+`C:\Users\jonathanmiddleton\.codex\evidence\mclworker`; the disposable roots were
+under `C:\Temp\Codex\tasks\mclworker`. The two native Windows binaries and upstream
+revision are unchanged from the identities above. The macOS worker experiment
+requires its own execution evidence; earlier direct-write passes do not qualify it.

@@ -1,6 +1,6 @@
 # Meadow confinement lab
 
-Standalone investigation of OS-enforced workspace write confinement for Meadow
+Standalone investigation of OS-enforced actor filesystem access for Meadow
 on Windows and macOS. The deployment target is ordinary, non-elevated Python
 with no required WSL, container service, compiler, or administrator setup.
 
@@ -11,6 +11,19 @@ used native process containers and PowerShell; macOS used Seatbelt and `/bin/sh`
 Matching unconfined controls could perform those same outside writes. This is a
 narrow feasibility result; full actor confinement remains unestablished.
 See [results and limits](docs/results.md).
+
+## Persistent tool worker
+
+```text
+python investigate.py worker-experiment --output-root runs/worker-01
+```
+
+Use `python3` on macOS. This experiment sends repeated read/write/command
+requests to a separate worker: workspace read/write, reference files read-only,
+and private controller files denied. It checks continued operation after denial,
+child/grandchild access and independent file bytes, with an unconfined control.
+It needs only ordinary Python and the committed helpers. See the
+[worker experiment](docs/worker-experiment.md) for the exact scope and receipts.
 
 ## Clone and run on Windows
 

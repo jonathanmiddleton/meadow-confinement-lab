@@ -1,4 +1,4 @@
-# Workspace write confinement investigation
+# Actor filesystem access investigation
 
 This repository investigates an operating-system boundary for actor-controlled
 execution. Bundled Windows and macOS MXC executors and a Python-only lab build
@@ -11,11 +11,11 @@ unqualified; see [recorded results](results.md) for the exact evidence and limit
 
 ## Required boundary
 
-An actor may edit files and execute useful programs inside its assigned Run
-workspace. It must not create, modify, delete, rename, or change permissions on
-files outside that workspace, even when its instructions or command text name an
-external destination. Authority comes from the admitted workspace, never from
-an actor-supplied working directory or a path embedded in a script.
+Each actor needs a stated and enforced filesystem access policy covering reads
+and writes. The initial policy allows workspace writes, selected read-only
+inputs/runtime paths and no access to private controller files. Instructions or
+command text naming an external path cannot expand that authority. Effective
+backend baseline permissions must be disclosed alongside explicit path grants.
 
 The boundary must cover shell commands, scripts and interpreters, their
 descendants, native language-server tools, and direct file-tool effects.
@@ -31,12 +31,16 @@ those dependencies uses a separate toolchain. Their installation, architecture s
 dependencies, licensing, upgrades, and removal remain part of deployment
 qualification.
 
-Write confinement is the acceptance requirement. Read confidentiality, network
-access, availability limits, and protection from kernel vulnerabilities are
-separate properties. Nevertheless, process access, IPC, credentials, and network
-access to local services matter whenever they let restricted code induce an
-unrestricted write. A mechanism cannot claim the write boundary while leaving
-such a route available.
+Read and write restrictions are acceptance requirements for the worker experiment.
+Network restriction, registry access, availability limits and protection from
+kernel vulnerabilities are separate properties. Process/IPC routes remain
+relevant if they let actor tools bypass the declared filesystem authority.
+
+The candidate architecture keeps provider/control operations outside the actor
+boundary and executes actor filesystem/command tools in a separate confined
+worker. This allows actor policy to be narrower than provider runtime needs.
+The [persistent-worker experiment](worker-experiment.md) tests that mechanism
+without model inference. It does not yet integrate the production Bridge path.
 
 Runtime-owned logging, storage, provisioning, and lifecycle operations remain
 trusted and may write outside the actor workspace. This exemption does not
@@ -158,6 +162,11 @@ a coverage limit; a malicious child failing to start is a startup failure. Neith
 is evidence that a reachable operation was denied.
 
 ## Investigation sequence
+
+The current next integration step is the persistent worker described above:
+read/write/command requests through a separate process under an actor policy,
+followed by provider integration. The broader sequence below is a coverage
+inventory, not a requirement to complete every generic probe before useful work.
 
 1. **Specify one candidate.** Pin source and license, identify the actual kernel
    enforcement primitive, enumerate writable grants and broker interfaces, and
