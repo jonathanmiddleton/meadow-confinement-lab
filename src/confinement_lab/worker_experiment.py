@@ -48,6 +48,7 @@ class WorkerFixture:
 
 
 def prepare_worker_fixture(root: Path, source: Path) -> WorkerFixture:
+    root = root.resolve()
     root.mkdir(parents=True, exist_ok=False)
     initial = {}
     for area in ("workspace", "reference", "private"):
