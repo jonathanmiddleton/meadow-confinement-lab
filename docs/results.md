@@ -195,3 +195,34 @@ quarantined distribution, or Meadow's full actor boundary. Fixtures are retained
 for inspection; there were no controller timeouts requiring process reconciliation.
 
 [mac-build]: https://github.com/jonathanmiddleton/meadow-confinement-lab/actions/runs/41097456118
+
+## Shared-candidate Windows regression (2026-10-30)
+
+The Windows coordinator verified implementation candidate
+`44c4c51e037929c78b9d11d6aa33c928c8ef7d0c`, whose functional source hashes also
+match the macOS source and extracted runs above. On the same littlemac Windows
+ARM64 development VM described earlier, CPython 3.13.15 ran the unit suite,
+portable ZIP build, extraction, and real packaged experiment under a non-elevated
+token. PATH contained only Windows System32 and Windows PowerShell.
+
+- `python -I -m unittest discover -s tests -v`: exit **0**, **25 passed**, with
+  **2 native POSIX-shell cases skipped** because no native POSIX shell exists on
+  Windows. Both cases passed in the macOS worker's 27-test run.
+- `python -I investigate.py build --output <new-zip>`: exit **0**. All four
+  native assets passed manifest checks; both macOS ZIP members retained explicit
+  Unix `0755` metadata even when packaged on Windows.
+- The extracted `investigate.py experiment` completed with exit **0**; Python
+  and Windows PowerShell control/enforcement cases all qualified. Inside bytes
+  matched, outside sentinels stayed unchanged, outside new files were absent,
+  and the Windows `base-container` child-exit events remained required.
+- The extracted harness source hashes matched the candidate checkout. Windows
+  native assets were unchanged. No timeout occurred or matching owned fixture
+  process remained at the post-run check; this is not general lifecycle proof.
+
+Raw unit/controller output, the bundle receipt, policies, payloads, native logs,
+and independent observations are retained under
+`C:\Users\jonathanmiddleton\.codex\evidence\mclmac`. The retained receipt
+identifies the tested ZIP by SHA-256. The implementation now has comparable
+ordinary-file feasibility evidence on the two ARM64 development platforms;
+the remaining limits above still apply. Subsequent documentation-only recording
+does not change the tested functional source.
