@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/microsoft/mxc.git",
+  "revision": "b4c1007502835d958ab291d332b929187be00440",
+  "license": "MIT",
+  "selected_backends": {
+    "Windows": "processcontainer (native PSEC only)",
+    "Darwin": "seatbelt"
+  },
+  "artifact_status": "not_built",
+  "qualification_status": "not_tested",
+  "selection_reason": "Contains removal of the older ProcessContainer fallbacks; v1.0.1 release defaults are not equivalent."
+}

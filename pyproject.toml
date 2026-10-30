@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "meadow-confinement-lab"
+version = "0.1.0"
+description = "Portable investigation of native workspace write confinement for Meadow"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+confinement-lab = "confinement_lab.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
