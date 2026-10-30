@@ -264,5 +264,70 @@ Receipts, raw output, policies, transcripts, fixture hashes, native logs, bundle
 identity and independent observations are retained under
 `C:\Users\jonathanmiddleton\.codex\evidence\mclworker`; the disposable roots were
 under `C:\Temp\Codex\tasks\mclworker`. The two native Windows binaries and upstream
-revision are unchanged from the identities above. The macOS worker experiment
-requires its own execution evidence; earlier direct-write passes do not qualify it.
+revision are unchanged from the identities above. Separate macOS worker
+execution evidence follows; earlier direct-write passes do not qualify it.
+
+## Persistent-worker macOS validation (2026-10-30)
+
+Functional candidate `1003cfa8874459046c4c8f05586878d1c8fb84dd` passed the
+[persistent worker experiment](worker-experiment.md) on `littlemac.local`,
+macOS **15.6** build **24G84**, native ARM64, UID **501**, using CPython
+**3.15.0** and the existing committed ARM64 MXC helper. No native artifact,
+source pin, or access policy was changed for this validation.
+
+The first unit run on `9c9caa57bd92594250f49d0815c0620ed73cbf14` exited **1**:
+33 tests passed and the private-fixture/read-grant overlap test failed. Fixture
+construction retained `/tmp/...`, while the read grant resolved to
+`/private/tmp/...`; a lexical containment comparison missed the same physical
+root. A bounded Python diagnostic reproduced the mismatch and confirmed that
+canonical fixture paths were rejected as expected. Candidate `1003cfa` resolves
+the root in `prepare_worker_fixture` before storing its paths. The existing test
+and policy were preserved. The subsequent complete unit run passed **34 tests**,
+exit **0**, with no skips. The original failure receipt remains retained.
+
+| Check on corrected candidate | Actual exit | Observed result |
+| --- | ---: | --- |
+| Source `worker-experiment`, `source-arm64-02` | 0 | Control and enforced cases qualified; 11 requests each |
+| Standard-library ZIP build | 0 | All four existing native assets verified and packaged |
+| `/usr/bin/unzip` extraction | 0 | Both macOS helper entries retained executable `0755` permissions |
+| Extracted `worker-experiment`, `portable-arm64-02` | 0 | Control and enforced cases qualified; 11 requests each |
+
+Final parent commands used an explicit PATH of `/bin` and a task-owned TMPDIR.
+Cargo, Rust, C/C++ compiler shims and build commands were unavailable through
+that PATH. The worker retained its configured system PATH, including `/usr/bin`;
+no compiler was invoked, and absence of toolchain files on this developer host
+is not established. Earlier successful runs with a broader parent system PATH
+are retained separately. The source and extracted reports have identical harness
+hashes matching the corrected candidate. Both used ARM64 helper SHA-256
+`4f985ec32533c5f9279df24b638dbd9d3d048539b1dfbbcde4cdeed0925e40dc`.
+The tested ZIP SHA-256 is
+`666150fb27d36a6d309d912315de0aa5b4a1d56fa77609f16f8477acd3d23e11`.
+Its documentation predates the final wording of this results entry; functional
+source is unchanged.
+
+In each enforced case, one persistent worker read workspace and reference
+contents, wrote workspace files, and continued successfully after denied
+reference overwrite and private read/overwrite/create requests. Those denials
+reported `PermissionError`, errno **1**, at the operation stage. Distinct child
+and grandchild processes also read/wrote the workspace, read the reference,
+and received OS denials for reference writes and private reads/writes. The
+unconfined controls completed the corresponding operations successfully.
+
+All 15 independent filesystem observations per case matched expectations,
+including unchanged denied-write targets and absence of the enforced private
+new file. The controller's private log matched the complete expected sequence
+of start, 11 request identifiers, and finish. Workers and synchronous descendants
+exited normally; output readers finished, and no helper termination was forced.
+The recorded worker/child/grandchild PIDs were absent at the post-run snapshot.
+No native failure or timeout occurred. This is evidence for these controlled
+processes, not general detached-process cleanup.
+
+Raw initial/final unit output, the path diagnostic, command exits, build and
+extraction receipts, native policies/logs, transcripts, controlled payloads,
+private controller logs, and independent observations are retained under
+`/Users/jonathanmiddleton/.codex/evidence/confinement-worker-macos-20261030`.
+Disposable fixtures remain under
+`/tmp/Codex/tasks/confinement-worker-macos/runs/`. Networking was explicitly
+allowed and was not tested. The experiment retains the documented Seatbelt
+baseline, IPC, metadata/device, alias, hostile-code, and lifetime limits;
+it does not qualify a production actor or Bridge/Copilot integration.
