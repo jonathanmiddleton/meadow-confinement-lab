@@ -1,9 +1,11 @@
 # Workspace write confinement investigation
 
 This repository investigates an operating-system boundary for actor-controlled
-execution. It contains no qualified sandbox implementation or native confinement
-results yet. The first objective is to establish feasibility under the deployment
-constraints below, then compare mechanisms using the same observable cases.
+execution. Bundled Windows MXC executors and a Python-only lab build support a
+controlled direct-write experiment. Initial non-elevated Windows observations
+show useful writes inside the workspace and denied create/overwrite attempts
+outside it from Python and Windows PowerShell. The full boundary below remains
+unqualified; see [recorded results](results.md) for the exact evidence and limits.
 
 ## Required boundary
 
@@ -21,9 +23,11 @@ are useful controls, but none alone establishes this boundary.
 Deployment must support native Windows and macOS from an ordinary non-elevated
 Python installation. Required administrator setup, separate user provisioning,
 drivers, WSL 2, and an installed container or sandbox runtime are outside scope.
-A bundled native helper is a candidate packaging decision; it is not inherently
-an elevation requirement. Its installation, architecture support, dependencies,
-licensing, upgrades, and removal must be accounted for.
+The lab bundles native Windows helpers so cloning, packaging, and running it do
+not require a compiler. Optional maintainer compilation of those dependencies
+uses a separate toolchain. Their installation, architecture support,
+dependencies, licensing, upgrades, and removal remain part of deployment
+qualification.
 
 Write confinement is the acceptance requirement. Read confidentiality, network
 access, availability limits, and protection from kernel vulnerabilities are
@@ -82,12 +86,22 @@ passes. The probes establish neither a workable mechanism nor impossibility
 under non-elevated deployment. This lab has not rerun or independently qualified
 those probes.
 
-Candidate source snapshots for the next inspection are [Microsoft MXC][mxc],
+The inspected candidate source snapshots are [Microsoft MXC][mxc],
 its [process-container OS support notes][mxc-windows] and
 [Seatbelt backend notes][mxc-seatbelt], and [Codex's MXC integration notes][codex-mxc].
-Review their hard-link and network limitations against the matrix below.
-These pinned sources are research inputs, not claims that a candidate has been
-built, run, or qualified here, or that current upstream main is unchanged.
+Review their hard-link and network limitations against the matrix below. The
+lab's MXC pin has been built for Windows ARM64 and x64 in hosted CI; its build
+receipts are described in [Native executors](executors.md). Compilation in those
+hosted environments is not proof of non-elevated source compilation.
+
+The initial execution evidence comes from the non-elevated
+`littlemacwindowsvm`, Windows ARM64 build `26200.9711`. Python and Windows
+PowerShell reached their payloads and wrote inside the allowed workspace while
+direct outside create and overwrite operations were denied and independently
+checked. The x64 helper has only been exercised under emulation on this ARM64
+host. Native x64 deployment, macOS, and the remaining matrix rows require
+further evidence; this result does not qualify Meadow Bridge's complete effect
+boundary.
 
 ## Comparable native experiments
 
@@ -169,8 +183,10 @@ work succeeded, the relevant outside object was independently checked, and no
 alternate effect escaped. Preserve unexpected outside effects as failures even
 if the command returned an error.
 
-Current status: investigation scaffold only; no candidate is qualified and no
-native confinement pass is claimed.
+Current status: Windows executors are available from the clone, and narrow
+non-elevated direct-write evidence is recorded. No candidate is qualified for
+the complete Meadow boundary. [Results](results.md) distinguish the completed
+cases from unsupported, unreached, and untested behavior.
 
 [workspace-tools]: https://github.com/jonathanmiddleton/meadow-runtime/blob/c3507f7398fb5fb30e2b3eb7a178b0e789d8374b/meadow/substrates/meadow_bridge/execution/workspace_tools.py#L804-L843
 [owned-commands]: https://github.com/jonathanmiddleton/meadow-runtime/blob/c3507f7398fb5fb30e2b3eb7a178b0e789d8374b/meadow/substrates/meadow_bridge/execution/owned_commands.py#L81-L98

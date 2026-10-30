@@ -1,0 +1,251 @@
+    Updating `MxcDependencies` index
+ Downloading crates ...
+  Downloaded writeable v0.6.3 (registry `MxcDependencies`)
+  Downloaded windows-collections v0.3.2 (registry `MxcDependencies`)
+  Downloaded colorchoice v1.0.5 (registry `MxcDependencies`)
+  Downloaded windows-link v0.2.1 (registry `MxcDependencies`)
+  Downloaded zmij v1.0.21 (registry `MxcDependencies`)
+  Downloaded zerovec v0.11.6 (registry `MxcDependencies`)
+  Downloaded yoke v0.8.3 (registry `MxcDependencies`)
+  Downloaded zerovec-derive v0.11.3 (registry `MxcDependencies`)
+  Downloaded zerotrie v0.2.4 (registry `MxcDependencies`)
+  Downloaded winresource v0.1.31 (registry `MxcDependencies`)
+  Downloaded thiserror v2.0.18 (registry `MxcDependencies`)
+  Downloaded uuid v1.23.3 (registry `MxcDependencies`)
+  Downloaded tracelogging_macros v1.2.3 (registry `MxcDependencies`)
+  Downloaded quote v1.0.45 (registry `MxcDependencies`)
+  Downloaded typenum v1.20.1 (registry `MxcDependencies`)
+  Downloaded clap v4.6.1 (registry `MxcDependencies`)
+  Downloaded serde_json v1.0.150 (registry `MxcDependencies`)
+  Downloaded winapi-util v0.1.11 (registry `MxcDependencies`)
+  Downloaded once_cell v1.21.4 (registry `MxcDependencies`)
+  Downloaded widestring v1.2.1 (registry `MxcDependencies`)
+  Downloaded serde_core v1.0.228 (registry `MxcDependencies`)
+  Downloaded syn v2.0.118 (registry `MxcDependencies`)
+  Downloaded stable_deref_trait v1.2.1 (registry `MxcDependencies`)
+  Downloaded serde v1.0.228 (registry `MxcDependencies`)
+  Downloaded rustc_version v0.4.1 (registry `MxcDependencies`)
+  Downloaded icu_properties_data v2.2.0 (registry `MxcDependencies`)
+  Downloaded nix v0.29.0 (registry `MxcDependencies`)
+  Downloaded idna v1.1.0 (registry `MxcDependencies`)
+  Downloaded icu_properties v2.2.0 (registry `MxcDependencies`)
+  Downloaded tracelogging v1.2.4 (registry `MxcDependencies`)
+  Downloaded smallvec v1.15.2 (registry `MxcDependencies`)
+  Downloaded memchr v2.8.2 (registry `MxcDependencies`)
+  Downloaded parking_lot_core v0.9.12 (registry `MxcDependencies`)
+  Downloaded litemap v0.8.2 (registry `MxcDependencies`)
+  Downloaded icu_collections v2.2.0 (registry `MxcDependencies`)
+  Downloaded chrono v0.4.45 (registry `MxcDependencies`)
+  Downloaded libc v0.2.186 (registry `MxcDependencies`)
+  Downloaded synstructure v0.13.2 (registry `MxcDependencies`)
+  Downloaded strsim v0.11.1 (registry `MxcDependencies`)
+  Downloaded sha2 v0.11.0 (registry `MxcDependencies`)
+  Downloaded serde_path_to_error v0.1.20 (registry `MxcDependencies`)
+  Downloaded serde_derive v1.0.228 (registry `MxcDependencies`)
+  Downloaded num-traits v0.2.19 (registry `MxcDependencies`)
+  Downloaded icu_normalizer v2.2.0 (registry `MxcDependencies`)
+  Downloaded unicode-ident v1.0.24 (registry `MxcDependencies`)
+  Downloaded unicode-general-category v1.1.0 (registry `MxcDependencies`)
+  Downloaded windows_x86_64_msvc v0.52.6 (registry `MxcDependencies`)
+  Downloaded tokio-macros v2.7.0 (registry `MxcDependencies`)
+  Downloaded tinystr v0.8.3 (registry `MxcDependencies`)
+  Downloaded socket2 v0.6.4 (registry `MxcDependencies`)
+  Downloaded semver v1.0.28 (registry `MxcDependencies`)
+  Downloaded potential_utf v0.1.5 (registry `MxcDependencies`)
+  Downloaded pin-project-lite v0.2.17 (registry `MxcDependencies`)
+  Downloaded tokio v1.52.3 (registry `MxcDependencies`)
+  Downloaded mio v1.2.1 (registry `MxcDependencies`)
+  Downloaded idna_adapter v1.2.2 (registry `MxcDependencies`)
+  Downloaded icu_provider v2.2.0 (registry `MxcDependencies`)
+  Downloaded icu_normalizer_data v2.2.0 (registry `MxcDependencies`)
+  Downloaded icu_locale_core v2.2.0 (registry `MxcDependencies`)
+  Downloaded clap_builder v4.6.0 (registry `MxcDependencies`)
+  Downloaded bytes v1.11.1 (registry `MxcDependencies`)
+  Downloaded proc-macro2 v1.0.106 (registry `MxcDependencies`)
+  Downloaded percent-encoding v2.3.2 (registry `MxcDependencies`)
+  Downloaded itoa v1.0.18 (registry `MxcDependencies`)
+  Downloaded bitflags v2.13.0 (registry `MxcDependencies`)
+  Downloaded anstyle v1.0.14 (registry `MxcDependencies`)
+  Downloaded winreg v0.55.0 (registry `MxcDependencies`)
+  Downloaded windows-strings v0.5.1 (registry `MxcDependencies`)
+  Downloaded windows-future v0.3.2 (registry `MxcDependencies`)
+  Downloaded utf8_iter v1.0.4 (registry `MxcDependencies`)
+  Downloaded scopeguard v1.2.0 (registry `MxcDependencies`)
+  Downloaded same-file v1.0.6 (registry `MxcDependencies`)
+  Downloaded once_cell_polyfill v1.70.2 (registry `MxcDependencies`)
+  Downloaded memoffset v0.9.1 (registry `MxcDependencies`)
+  Downloaded fastrand v2.4.1 (registry `MxcDependencies`)
+  Downloaded windows-implement v0.60.2 (registry `MxcDependencies`)
+  Downloaded windows-core v0.62.2 (registry `MxcDependencies`)
+  Downloaded parking_lot v0.12.5 (registry `MxcDependencies`)
+  Downloaded lock_api v0.4.14 (registry `MxcDependencies`)
+  Downloaded is_terminal_polyfill v1.70.2 (registry `MxcDependencies`)
+  Downloaded getrandom v0.4.2 (registry `MxcDependencies`)
+  Downloaded flatbuffers v25.12.19 (registry `MxcDependencies`)
+  Downloaded digest v0.11.3 (registry `MxcDependencies`)
+  Downloaded clap_derive v4.6.1 (registry `MxcDependencies`)
+  Downloaded cfg-if v1.0.4 (registry `MxcDependencies`)
+  Downloaded base64 v0.22.1 (registry `MxcDependencies`)
+  Downloaded anstyle-wincon v3.0.11 (registry `MxcDependencies`)
+  Downloaded windows-threading v0.2.1 (registry `MxcDependencies`)
+  Downloaded utf8parse v0.2.2 (registry `MxcDependencies`)
+  Downloaded thiserror-impl v2.0.18 (registry `MxcDependencies`)
+  Downloaded form_urlencoded v1.2.2 (registry `MxcDependencies`)
+  Downloaded find-msvc-tools v0.1.9 (registry `MxcDependencies`)
+  Downloaded cidr v0.3.2 (registry `MxcDependencies`)
+  Downloaded cfg_aliases v0.2.1 (registry `MxcDependencies`)
+  Downloaded cc v1.2.64 (registry `MxcDependencies`)
+  Downloaded zerofrom-derive v0.1.7 (registry `MxcDependencies`)
+  Downloaded zerofrom v0.1.8 (registry `MxcDependencies`)
+  Downloaded yoke-derive v0.8.2 (registry `MxcDependencies`)
+  Downloaded windows-targets v0.52.6 (registry `MxcDependencies`)
+  Downloaded windows-result v0.4.1 (registry `MxcDependencies`)
+  Downloaded windows-numerics v0.3.1 (registry `MxcDependencies`)
+  Downloaded windows-interface v0.59.3 (registry `MxcDependencies`)
+  Downloaded version_check v0.9.5 (registry `MxcDependencies`)
+  Downloaded clap_lex v1.1.0 (registry `MxcDependencies`)
+  Downloaded anyhow v1.0.103 (registry `MxcDependencies`)
+  Downloaded anstyle-query v1.1.5 (registry `MxcDependencies`)
+  Downloaded url v2.5.8 (registry `MxcDependencies`)
+  Downloaded cpufeatures v0.3.0 (registry `MxcDependencies`)
+  Downloaded const-oid v0.10.2 (registry `MxcDependencies`)
+  Downloaded autocfg v1.5.1 (registry `MxcDependencies`)
+  Downloaded windows-sys v0.59.0 (registry `MxcDependencies`)
+  Downloaded anstyle-parse v1.0.0 (registry `MxcDependencies`)
+  Downloaded tempfile v3.27.0 (registry `MxcDependencies`)
+  Downloaded shlex v2.0.1 (registry `MxcDependencies`)
+  Downloaded hybrid-array v0.4.12 (registry `MxcDependencies`)
+  Downloaded heck v0.5.0 (registry `MxcDependencies`)
+  Downloaded crypto-common v0.2.2 (registry `MxcDependencies`)
+  Downloaded getrandom v0.2.17 (registry `MxcDependencies`)
+  Downloaded displaydoc v0.2.6 (registry `MxcDependencies`)
+  Downloaded block-buffer v0.12.1 (registry `MxcDependencies`)
+  Downloaded anstream v1.0.0 (registry `MxcDependencies`)
+  Downloaded windows-sys v0.61.2 (registry `MxcDependencies`)
+  Downloaded windows v0.62.2 (registry `MxcDependencies`)
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.45
+   Compiling windows-link v0.2.1
+   Compiling stable_deref_trait v1.2.1
+   Compiling windows-sys v0.61.2
+   Compiling syn v2.0.118
+   Compiling cfg-if v1.0.4
+   Compiling zmij v1.0.21
+   Compiling getrandom v0.4.2
+   Compiling serde v1.0.228
+   Compiling serde_json v1.0.150
+   Compiling serde_core v1.0.228
+   Compiling autocfg v1.5.1
+   Compiling synstructure v0.13.2
+   Compiling typenum v1.20.1
+   Compiling writeable v0.6.3
+   Compiling smallvec v1.15.2
+   Compiling litemap v0.8.2
+   Compiling hybrid-array v0.4.12
+   Compiling zerofrom-derive v0.1.7
+   Compiling yoke-derive v0.8.2
+   Compiling zerofrom v0.1.8
+   Compiling zerovec-derive v0.11.3
+   Compiling yoke v0.8.3
+   Compiling displaydoc v0.2.6
+   Compiling zerovec v0.11.6
+   Compiling potential_utf v0.1.5
+   Compiling serde_derive v1.0.228
+   Compiling tinystr v0.8.3
+   Compiling icu_locale_core v2.2.0
+   Compiling zerotrie v0.2.4
+   Compiling semver v1.0.28
+   Compiling icu_properties_data v2.2.0
+   Compiling utf8_iter v1.0.4
+   Compiling icu_normalizer_data v2.2.0
+   Compiling icu_collections v2.2.0
+   Compiling icu_provider v2.2.0
+   Compiling windows-implement v0.60.2
+   Compiling windows-interface v0.59.3
+   Compiling windows-result v0.4.1
+   Compiling windows-strings v0.5.1
+   Compiling shlex v2.0.1
+   Compiling itoa v1.0.18
+   Compiling find-msvc-tools v0.1.9
+   Compiling version_check v0.9.5
+   Compiling windows_x86_64_msvc v0.52.6
+   Compiling memchr v2.8.2
+   Compiling winresource v0.1.31
+   Compiling cc v1.2.64
+   Compiling windows-core v0.62.2
+   Compiling block-buffer v0.12.1
+   Compiling crypto-common v0.2.2
+   Compiling parking_lot_core v0.9.12
+   Compiling const-oid v0.10.2
+   Compiling digest v0.11.3
+   Compiling icu_normalizer v2.2.0
+   Compiling icu_properties v2.2.0
+   Compiling rustc_version v0.4.1
+   Compiling num-traits v0.2.19
+   Compiling memoffset v0.9.1
+   Compiling anstyle v1.0.14
+   Compiling scopeguard v1.2.0
+   Compiling once_cell_polyfill v1.70.2
+   Compiling cfg_aliases v0.2.1
+   Compiling cpufeatures v0.3.0
+   Compiling utf8parse v0.2.2
+   Compiling libc v0.2.186
+   Compiling anstyle-parse v1.0.0
+   Compiling sha2 v0.11.0
+   Compiling nix v0.29.0
+   Compiling anstyle-wincon v3.0.11
+   Compiling lock_api v0.4.14
+   Compiling flatbuffers v25.12.19
+   Compiling windows-targets v0.52.6
+   Compiling idna_adapter v1.2.2
+   Compiling uuid v1.23.3
+   Compiling anstyle-query v1.1.5
+   Compiling windows-threading v0.2.1
+   Compiling unicode-general-category v1.1.0
+   Compiling colorchoice v1.0.5
+   Compiling percent-encoding v2.3.2
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling anyhow v1.0.103
+   Compiling bitflags v2.13.0
+   Compiling thiserror v2.0.18
+   Compiling anstream v1.0.0
+   Compiling form_urlencoded v1.2.2
+   Compiling windows-future v0.3.2
+   Compiling mxc-sdk v1.0.1 (D:\a\meadow-confinement-lab\meadow-confinement-lab\upstream\src\mxc-sdk)
+   Compiling parking_lot v0.12.5
+   Compiling idna v1.1.0
+   Compiling windows-sys v0.59.0
+   Compiling windows-numerics v0.3.1
+   Compiling windows-collections v0.3.2
+   Compiling thiserror-impl v2.0.18
+   Compiling tokio-macros v2.7.0
+   Compiling winapi-util v0.1.11
+   Compiling socket2 v0.6.4
+   Compiling mio v1.2.1
+   Compiling bytes v1.11.1
+   Compiling heck v0.5.0
+   Compiling fastrand v2.4.1
+   Compiling once_cell v1.21.4
+   Compiling strsim v0.11.1
+   Compiling tracelogging_macros v1.2.3
+   Compiling clap_lex v1.1.0
+   Compiling pin-project-lite v0.2.17
+   Compiling tokio v1.52.3
+   Compiling tracelogging v1.2.4
+   Compiling clap_builder v4.6.0
+   Compiling tempfile v3.27.0
+   Compiling clap_derive v4.6.1
+   Compiling same-file v1.0.6
+   Compiling windows v0.62.2
+   Compiling chrono v0.4.45
+   Compiling winreg v0.55.0
+   Compiling url v2.5.8
+   Compiling serde_path_to_error v0.1.20
+   Compiling wxc v1.0.1 (D:\a\meadow-confinement-lab\meadow-confinement-lab\upstream\src\tools\wxc)
+   Compiling getrandom v0.2.17
+   Compiling base64 v0.22.1
+   Compiling cidr v0.3.2
+   Compiling widestring v1.2.1
+   Compiling clap v4.6.1
+    Finished `release` profile [optimized + debuginfo] target(s) in 6m 52s

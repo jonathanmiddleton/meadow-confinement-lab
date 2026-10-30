@@ -14,7 +14,31 @@ def main(argv: list[str] | None = None) -> int:
     commands = parser.add_subparsers(dest="command", required=True)
     inventory = commands.add_parser("environment", help="Collect host facts; does not test confinement")
     inventory.add_argument("--output", type=Path, help="Write a new JSON report instead of stdout")
+    experiment = commands.add_parser("experiment", help="Run controlled Windows direct-write witnesses")
+    experiment.add_argument("--output-root", type=Path, required=True, help="New directory for disposable fixtures and retained evidence")
+    experiment.add_argument("--executor", type=Path, help="Override the bundled, manifest-verified executor")
+    bundle = commands.add_parser("build", help="Build a portable ZIP using Python only")
+    bundle.add_argument("--output", type=Path, required=True, help="New output ZIP file")
     args = parser.parse_args(argv)
+
+    repo_root = Path(__file__).resolve().parents[2]
+    try:
+        if args.command == "experiment":
+            from confinement_lab.experiment import run_experiment
+            report = run_experiment(repo_root, args.output_root, args.executor)
+            print(f"Direct-write experiment: {report['status']}")
+            print(f"Report: {args.output_root / 'report.json'}")
+            for case in report["cases"]:
+                print(f"  {case['name']}: {case['evaluation']['status']} (qualifies: {case['qualifies']})")
+            print("Full confinement remains unestablished; this is a narrow direct-write witness.")
+            return 0 if report["status"] == "pass" else 1
+        if args.command == "build":
+            from confinement_lab.bundle import build_bundle
+            receipt = build_bundle(repo_root, args.output)
+            print(json.dumps(receipt, indent=2))
+            return 0
+    except (OSError, ValueError, RuntimeError) as error:
+        parser.exit(2, f"{error}\n")
 
     report = {
         "schema_version": 1,

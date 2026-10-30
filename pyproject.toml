@@ -9,8 +9,5 @@ description = "Portable investigation of native workspace write confinement for 
 requires-python = ">=3.11"
 dependencies = []
 
-[project.scripts]
-confinement-lab = "confinement_lab.cli:main"
-
 [tool.setuptools.packages.find]
 where = ["src"]

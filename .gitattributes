@@ -1,0 +1,3 @@
+# Preserve captured upstream bytes, including CRLF, against their build hashes.
+native/** -text -whitespace
+native/**/wxc-exec.exe binary

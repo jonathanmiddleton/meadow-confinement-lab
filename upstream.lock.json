@@ -7,7 +7,5 @@
     "Windows": "processcontainer (native PSEC only)",
     "Darwin": "seatbelt"
   },
-  "artifact_status": "not_built",
-  "qualification_status": "not_tested",
   "selection_reason": "Contains removal of the older ProcessContainer fallbacks; v1.0.1 release defaults are not equivalent."
 }

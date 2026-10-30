@@ -5,7 +5,8 @@ security component. Read README.md and docs/investigation.md before changing it.
 
 - Preserve Windows and macOS support. Restricted-host execution must need no
   administrator setup, WSL, container service, or compiler. Developer builds may
-  use toolchains; distribute their resulting native assets separately.
+  use toolchains; commit their resulting native assets with build provenance so
+  restricted hosts can run directly from a clone.
 - Keep Python diagnostics runnable from a clone with Python 3.11+ and the standard
   library. Do not require package installation just to collect environment facts.
 - Keep environment discovery, native API availability, successful process startup,
@@ -20,5 +21,8 @@ security component. Read README.md and docs/investigation.md before changing it.
   reports for private paths before sharing them. Keep generated evidence ignored.
 - Use meaningful behavioral tests. Bootstrap checks use
   `python -m unittest discover -s tests -v`; report native execution separately.
+- `python investigate.py build --output <new-zip>` packages source and verified
+  helpers using only the standard library. Native source rebuilds use the pinned
+  CI workflow; keep their compilation evidence separate from confinement evidence.
 - Inspect git status before editing and commit/push completed in-scope changes.
   Do not change Runtime, Authoring, or the sibling MXC checkout implicitly.

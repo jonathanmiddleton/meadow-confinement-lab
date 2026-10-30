@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "status": "built",
+  "confinement_status": "not_tested",
+  "started_at": "2026-10-30T11:57:13.4811866+00:00",
+  "architecture": "arm64",
+  "target": "aarch64-pc-windows-msvc",
+  "upstream_repository": "https://github.com/microsoft/mxc.git",
+  "expected_upstream_revision": "b4c1007502835d958ab291d332b929187be00440",
+  "upstream_lock": {
+    "name": "upstream.lock.json",
+    "bytes": 483,
+    "sha256": "a39423511b487cf97a0d33940db8817cdce4561827fae7dc169e3afbfc5db7ab"
+  },
+  "command": {
+    "executable": "cargo",
+    "arguments": [
+      "+1.93",
+      "--config",
+      "../.azure-pipelines/.cargo/config.public.toml",
+      "build",
+      "--locked",
+      "--release",
+      "-p",
+      "wxc",
+      "--bin",
+      "wxc-exec",
+      "--target",
+      "aarch64-pc-windows-msvc",
+      "--no-default-features",
+      "--color",
+      "never"
+    ],
+    "working_directory": "upstream/src"
+  },
+  "build_exit_code": 0,
+  "runner": {
+    "os": "Windows",
+    "architecture": "ARM64",
+    "image_os": "win11-vs2026-arm64",
+    "image_version": "20261026.197.1",
+    "windows_version": "Microsoft Windows NT 10.0.26200.0"
+  },
+  "workflow": {
+    "repository": "jonathanmiddleton/meadow-confinement-lab",
+    "revision": "94486d1ee49c902461d722843384e0887b0b6a08",
+    "run_id": "41051644663",
+    "run_attempt": "1",
+    "workflow_ref": "jonathanmiddleton/meadow-confinement-lab/.github/workflows/build-mxc.yml@refs/heads/main"
+  },
+  "files": [
+    {
+      "name": "build.log",
+      "bytes": 12018,
+      "sha256": "1fb09a96b9a47b3b70e8ece6bc8a4542072074e7c613eff4cd1f3da479aa0682"
+    },
+    {
+      "name": "LICENSE.md",
+      "bytes": 1140,
+      "sha256": "d9a1b1e30d633d5732ea18e3cba9538d293ebc53e1a9e4e96ab739e0c5c4f1cb"
+    },
+    {
+      "name": "pe-imports.txt",
+      "bytes": 18292,
+      "sha256": "4a16671312623df34da13aca55972a6a8f070a9fa4384fce5f00a99a7b884551"
+    },
+    {
+      "name": "wxc-exec.exe",
+      "bytes": 4865024,
+      "sha256": "5b04b55a6228620cc178e96c9047829b9abf77ad48a35c0ff2057be23b445537"
+    }
+  ],
+  "upstream_revision": "b4c1007502835d958ab291d332b929187be00440",
+  "upstream_clean_before": true,
+  "lab_revision": "94486d1ee49c902461d722843384e0887b0b6a08",
+  "cargo_lock": {
+    "name": "Cargo.lock",
+    "bytes": 82593,
+    "sha256": "8a0aeece3c07a40f579d267351747955cba8db5dea8f64e3f9489e4f51828f5a"
+  },
+  "compiler_config": {
+    "name": "config.toml",
+    "bytes": 947,
+    "sha256": "a2c33d393ad0cc6d5e35129e7681647ca2a49bbb573fd3f92726750f17e02da0"
+  },
+  "dependency_feed_config": {
+    "name": "config.public.toml",
+    "bytes": 530,
+    "sha256": "443b9576b72f08d5277d3fd8dbfbe4763de1f4d383f16789e9d01eec1710f048"
+  },
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)\nbinary: rustc\ncommit-hash: 01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf\ncommit-date: 2026-02-11\nhost: aarch64-pc-windows-msvc\nrelease: 1.93.1\nLLVM version: 21.1.8",
+  "cargo": "cargo 1.93.1 (083ac5135 2025-12-15)",
+  "upstream_clean_after": true,
+  "product_version": "1.0.1+b4c1007",
+  "pe_imports": {
+    "status": "recorded",
+    "tool": "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\MSVC\\14.51.36231\\bin\\Hostarm64\\arm64\\dumpbin.exe",
+    "exit_code": 0
+  },
+  "finished_at": "2026-10-30T12:01:58.1211497+00:00"
+}
