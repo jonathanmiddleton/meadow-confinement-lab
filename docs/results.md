@@ -29,8 +29,8 @@ complete actor boundary or make the lab a qualified production sandbox.
   with exit **0**, using the default ARM64 helper and the same harness source
   hashes as the source-checkout run. The retained build receipt identifies the ZIP.
 
-The x64 helper ran under emulation on this ARM64 host. It has **not** been
-qualified on native x64 hardware or on the user's restricted remote host.
+The x64 helper ran under emulation on this ARM64 host. Native x64 hardware has
+not been qualified by these local runs.
 macOS native execution has not been tested.
 
 ## Direct-write results
@@ -66,8 +66,8 @@ location is unwritable. Logs reported successful teardown but
 Both helpers were compiled by [GitHub Actions run 41051644663][build], which
 completed successfully at lab commit `94486d1ee49c902461d722843384e0887b0b6a08`.
 The builders were `windows-11-arm` and `windows-2025`, using Rust 1.93.1 and
-locked dependencies. Native compilation happened there, not on the restricted
-host. The hosted build receipts do not prove compilation under a non-elevated
+locked dependencies. Native compilation happened on those GitHub-hosted builders.
+The hosted build receipts do not prove compilation under a non-elevated
 token; the local Python packaging and execution are separate operations.
 
 MXC source: `b4c1007502835d958ab291d332b929187be00440`.
@@ -93,8 +93,8 @@ comes from the experiments above. Full local receipts are retained under
 SHA-256 values, policies, raw process output, and native logs. Working fixtures
 were under `C:\Temp\Codex\tasks\mcl27`.
 
-Remote reproduction should use the [README commands](../README.md). A remote
-startup failure, missing capability, or blocked binary is a feasibility result,
+Reproduction should use the [README commands](../README.md). A startup
+failure, missing capability, or blocked binary is a feasibility result,
 not a confinement pass. Preserve its `report.json` and case receipts.
 
 Unresolved work includes deletes, rename and permission changes; junctions,

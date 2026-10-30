@@ -17,7 +17,7 @@ See [results and limits](docs/results.md).
 git clone https://github.com/jonathanmiddleton/meadow-confinement-lab.git
 cd meadow-confinement-lab
 python investigate.py environment --output evidence/host.json
-python investigate.py experiment --output-root runs/remote-01
+python investigate.py experiment --output-root runs/direct-write-01
 ```
 
 Use Python 3.11 or later (`py -3` can replace `python`) in an ordinary terminal.
@@ -50,7 +50,7 @@ inspection rather than claiming full lifecycle cleanup.
 
 Reports contain local paths, OS/Python details, selected tool locations, and the
 explicit test environment. They do not dump your inherited environment or read
-credentials. Share the report and case receipts when comparing remote results.
+credentials. Share the report and case receipts when comparing experiment results.
 
 ## Build a portable copy
 
@@ -83,6 +83,6 @@ write operations, native-server tools, lifecycle, and macOS.
 Microsoft MXC is pinned in [upstream.lock.json](upstream.lock.json) after removal
 of its older Windows fallback paths. Its published `v1.0.1` release is not
 equivalent and must not replace these assets. This repository is independent of
-the sibling Runtime, Authoring, and MXC checkouts; remote execution needs none
+the sibling Runtime, Authoring, and MXC checkouts; running the lab needs none
 of them. Generated reports and fixtures belong in ignored `evidence/` or `runs/`
 directories, or an explicitly selected external directory.
