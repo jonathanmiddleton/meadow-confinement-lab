@@ -1,0 +1,59 @@
+name: Build pinned MXC executors
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Windows ${{ matrix.architecture }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - architecture: x64
+            runner: windows-2025
+            target: x86_64-pc-windows-msvc
+          - architecture: arm64
+            runner: windows-11-arm
+            target: aarch64-pc-windows-msvc
+    steps:
+      - name: Check out investigation
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Check out pinned MXC
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: microsoft/mxc
+          ref: b4c1007502835d958ab291d332b929187be00440
+          path: upstream
+          persist-credentials: false
+
+      - name: Install build toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f
+        with:
+          toolchain: '1.93'
+          target: ${{ matrix.target }}
+          rustflags: ''
+          cache: 'false'
+          override: false
+          build-warnings: ''
+
+      - name: Build and record provenance
+        shell: pwsh
+        run: ./scripts/build_mxc.ps1 -Architecture '${{ matrix.architecture }}' -UpstreamDirectory ./upstream
+
+      - name: Upload executor and build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: mxc-windows-${{ matrix.architecture }}
+          path: artifacts/mxc-windows-${{ matrix.architecture }}/
+          if-no-files-found: error
+          retention-days: 14
