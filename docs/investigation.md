@@ -164,10 +164,13 @@ is evidence that a reachable operation was denied.
 ## Investigation sequence
 
 The persistent worker described above passed its controlled read/write/command
-contract on both development platforms. The next integration step connects that
-worker behind a real Copilot/Bridge turn while preserving the provider/tool
-authority split. The broader sequence below is a coverage inventory, not a
-requirement to complete every generic probe before useful work.
+contract on both development platforms. This already includes bidirectional
+request/result communication over pipes while the filesystem policy is active.
+Architecture and detailed design remain open. Any next lab extension should
+isolate a specific communication requirement beyond that demonstrated channel;
+production Bridge migration and provider integration belong to a later phase.
+The broader sequence below is a coverage inventory, not a requirement to complete
+every generic probe before useful work.
 
 1. **Specify one candidate.** Pin source and license, identify the actual kernel
    enforcement primitive, enumerate writable grants and broker interfaces, and
