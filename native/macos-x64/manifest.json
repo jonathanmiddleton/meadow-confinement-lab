@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "status": "built",
+  "confinement_status": "not_tested",
+  "started_at": "2026-10-30T17:17:33.607519+00:00",
+  "platform": "Darwin",
+  "architecture": "x64",
+  "target": "x86_64-apple-darwin",
+  "build_exit_code": 0,
+  "command": {
+    "executable": "cargo",
+    "arguments": [
+      "+1.93",
+      "--config",
+      "../.azure-pipelines/.cargo/config.public.toml",
+      "build",
+      "--locked",
+      "--release",
+      "-p",
+      "mxc_darwin",
+      "--bin",
+      "mxc-exec-mac",
+      "--target",
+      "x86_64-apple-darwin",
+      "--color",
+      "never"
+    ],
+    "working_directory": "upstream/src"
+  },
+  "runner": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "macos_version": "15.8.2",
+    "effective_uid": 501,
+    "os": "macOS",
+    "architecture": "ARM64",
+    "image_os": "macos15",
+    "image_version": "20261028.0489.1"
+  },
+  "workflow": {
+    "repository": "jonathanmiddleton/meadow-confinement-lab",
+    "revision": "a50521f534368585a37a03255f8ac4177beb7a32",
+    "run_id": "41097456118",
+    "run_attempt": "1",
+    "workflow_ref": "jonathanmiddleton/meadow-confinement-lab/.github/workflows/build-mxc.yml@refs/heads/main"
+  },
+  "files": [
+    {
+      "name": "LICENSE.md",
+      "bytes": 1140,
+      "sha256": "d9a1b1e30d633d5732ea18e3cba9538d293ebc53e1a9e4e96ab739e0c5c4f1cb"
+    },
+    {
+      "name": "build.log",
+      "bytes": 9736,
+      "sha256": "5a5837d2e1f42e553c400c2fe36f31d77fb698dbc095f10ad76ab2b3768a6a21"
+    },
+    {
+      "name": "dependencies.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "dependencies.stdout.txt",
+      "bytes": 349,
+      "sha256": "25ade884455fb7f1b36010c1bb65d5120b9c15eca420a68c295c544e405c6ce8"
+    },
+    {
+      "name": "file.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "file.stdout.txt",
+      "bytes": 135,
+      "sha256": "7c7fc17592ae345bbe3703c6260cf60096c6c3cad576bd0f8dd9d4f5fbf76643"
+    },
+    {
+      "name": "load_commands.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "load_commands.stdout.txt",
+      "bytes": 6619,
+      "sha256": "7437b939e69b6e7fec01a583c271448376d350316f1cd012e105f4ce90fad430"
+    },
+    {
+      "name": "mxc-exec-mac",
+      "bytes": 3636980,
+      "sha256": "d6e2bbe9f596d7513e7983f024e8f76997570e29225375e7bc5e9aec58222d15"
+    },
+    {
+      "name": "signature.stderr.txt",
+      "bytes": 136,
+      "sha256": "bda22d36f8d5dc9791ca38ada3ca630ef3e95911c154c608867ca56b004e22a8"
+    },
+    {
+      "name": "signature.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "signature_verification.stderr.txt",
+      "bytes": 160,
+      "sha256": "15e716c818bf85f1d7953b5e7cf98e5339de4ba9a5431d5b0d2cf04501d7557d"
+    },
+    {
+      "name": "signature_verification.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "upstream_repository": "https://github.com/microsoft/mxc.git",
+  "expected_upstream_revision": "b4c1007502835d958ab291d332b929187be00440",
+  "upstream_lock": {
+    "name": "upstream.lock.json",
+    "bytes": 396,
+    "sha256": "1382cbe1de0d2f36afcbce0eb84bc4e2b1ff115abc9bafc264a7421956d8c87c"
+  },
+  "build_script": {
+    "name": "build_mxc_macos.py",
+    "bytes": 8227,
+    "sha256": "8771e9120c281c96b2bbe803c0aa229881acb8228aa476e7ede3b23a86f4f990"
+  },
+  "workflow_source": {
+    "name": "build-mxc.yml",
+    "bytes": 3758,
+    "sha256": "3c43e3afb64d5c01060b15c7b2f0ad6a68feb58382c2862afa269e1563f1e49a"
+  },
+  "lab_revision": "a50521f534368585a37a03255f8ac4177beb7a32",
+  "upstream_revision": "b4c1007502835d958ab291d332b929187be00440",
+  "upstream_tree": "dcf59ca2374bad0c6acc2621aa1ce8ed9d1e3f34",
+  "upstream_clean_before": true,
+  "cargo_lock": {
+    "name": "Cargo.lock",
+    "bytes": 82593,
+    "sha256": "8a0aeece3c07a40f579d267351747955cba8db5dea8f64e3f9489e4f51828f5a"
+  },
+  "compiler_config": {
+    "name": "config.toml",
+    "bytes": 947,
+    "sha256": "a2c33d393ad0cc6d5e35129e7681647ca2a49bbb573fd3f92726750f17e02da0"
+  },
+  "dependency_feed_config": {
+    "name": "config.public.toml",
+    "bytes": 530,
+    "sha256": "443b9576b72f08d5277d3fd8dbfbe4763de1f4d383f16789e9d01eec1710f048"
+  },
+  "toolchain_config": {
+    "name": "rust-toolchain.toml",
+    "bytes": 1244,
+    "sha256": "03a7f8cbc74e36e289a1503f1c616a24ecf44a7fe49b4a9d367914865c4b124f"
+  },
+  "build_environment": {
+    "MACOSX_DEPLOYMENT_TARGET": {
+      "inherited": null,
+      "effective": "15.0",
+      "reason": "Pinned Seatbelt backend requires macOS 15+."
+    },
+    "compiler_overrides": {
+      "RUSTFLAGS": "unset",
+      "CARGO_ENCODED_RUSTFLAGS": "unset",
+      "CARGO_BUILD_RUSTFLAGS": "unset",
+      "CARGO_TARGET_DIR": "unset",
+      "CARGO_TARGET_X86_64_APPLE_DARWIN_RUSTFLAGS": "unset"
+    }
+  },
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)\nbinary: rustc\ncommit-hash: 01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf\ncommit-date: 2026-02-11\nhost: aarch64-apple-darwin\nrelease: 1.93.1\nLLVM version: 21.1.8",
+  "cargo": "cargo 1.93.1 (083ac5135 2025-12-15)",
+  "clang": "Apple clang version 17.0.0 (clang-1700.0.13.5)\nTarget: arm64-apple-darwin24.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+  "sdk_version": "15.5",
+  "upstream_clean_after": true,
+  "observations": {
+    "file": {
+      "command": [
+        "file",
+        "/Users/runner/work/meadow-confinement-lab/meadow-confinement-lab/artifacts/mxc-macos-x64/mxc-exec-mac"
+      ],
+      "exit_code": 0
+    },
+    "dependencies": {
+      "command": [
+        "otool",
+        "-L",
+        "/Users/runner/work/meadow-confinement-lab/meadow-confinement-lab/artifacts/mxc-macos-x64/mxc-exec-mac"
+      ],
+      "exit_code": 0
+    },
+    "load_commands": {
+      "command": [
+        "otool",
+        "-l",
+        "/Users/runner/work/meadow-confinement-lab/meadow-confinement-lab/artifacts/mxc-macos-x64/mxc-exec-mac"
+      ],
+      "exit_code": 0
+    },
+    "signature": {
+      "command": [
+        "codesign",
+        "-d",
+        "--verbose=4",
+        "/Users/runner/work/meadow-confinement-lab/meadow-confinement-lab/artifacts/mxc-macos-x64/mxc-exec-mac"
+      ],
+      "exit_code": 1
+    },
+    "signature_verification": {
+      "command": [
+        "codesign",
+        "--verify",
+        "--verbose=4",
+        "/Users/runner/work/meadow-confinement-lab/meadow-confinement-lab/artifacts/mxc-macos-x64/mxc-exec-mac"
+      ],
+      "exit_code": 1
+    }
+  },
+  "signing_action": "none; compiler/linker output inspected without modification",
+  "notarization": "not_performed",
+  "finished_at": "2026-10-30T17:19:14.058040+00:00"
+}

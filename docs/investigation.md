@@ -1,10 +1,12 @@
 # Workspace write confinement investigation
 
 This repository investigates an operating-system boundary for actor-controlled
-execution. Bundled Windows MXC executors and a Python-only lab build support a
-controlled direct-write experiment. Initial non-elevated Windows observations
-show useful writes inside the workspace and denied create/overwrite attempts
-outside it from Python and Windows PowerShell. The full boundary below remains
+execution. Bundled Windows and macOS MXC executors and a Python-only lab build
+support a controlled direct-write experiment. Non-elevated Windows ARM64 and
+macOS ARM64 observations show useful writes inside the workspace and denied
+create/overwrite attempts outside it from Python and each platform's shell.
+Native compilation and execution evidence are tracked separately. The full
+boundary below remains
 unqualified; see [recorded results](results.md) for the exact evidence and limits.
 
 ## Required boundary
@@ -23,9 +25,9 @@ are useful controls, but none alone establishes this boundary.
 Deployment must support native Windows and macOS from an ordinary non-elevated
 Python installation. Required administrator setup, separate user provisioning,
 drivers, WSL 2, and an installed container or sandbox runtime are outside scope.
-The lab bundles native Windows helpers so cloning, packaging, and running it do
-not require a compiler. Optional maintainer compilation of those dependencies
-uses a separate toolchain. Their installation, architecture support,
+The lab distributes native helpers so cloning, packaging, and running it with a
+verified helper do not require a compiler. Optional maintainer compilation of
+those dependencies uses a separate toolchain. Their installation, architecture support,
 dependencies, licensing, upgrades, and removal remain part of deployment
 qualification.
 
@@ -90,18 +92,35 @@ The inspected candidate source snapshots are [Microsoft MXC][mxc],
 its [process-container OS support notes][mxc-windows] and
 [Seatbelt backend notes][mxc-seatbelt], and [Codex's MXC integration notes][codex-mxc].
 Review their hard-link and network limitations against the matrix below. The
-lab's MXC pin has been built for Windows ARM64 and x64 in hosted CI; its build
-receipts are described in [Native executors](executors.md). Compilation in those
-hosted environments is not proof of non-elevated source compilation.
+lab's MXC pin has been built for Windows and macOS ARM64 and x64 in hosted CI;
+its build receipts are described in [Native executors](executors.md). The macOS
+receipts record a non-root UID; the Windows build receipts do not establish token
+elevation. Neither build qualifies source compilation on a restricted end host.
 
 The initial execution evidence comes from the non-elevated
 `littlemacwindowsvm`, Windows ARM64 build `26200.9711`. Python and Windows
 PowerShell reached their payloads and wrote inside the allowed workspace while
 direct outside create and overwrite operations were denied and independently
 checked. The x64 helper has only been exercised under emulation on this ARM64
-host. Native x64 deployment, macOS, and the remaining matrix rows require
+host. Native x64 deployment and the remaining matrix rows require
 further evidence; this result does not qualify Meadow Bridge's complete effect
 boundary.
+
+On `littlemac.local`, macOS 15.6 ARM64, the same pinned MXC source and its Seatbelt
+backend passed the paired Python and `/bin/sh` cases as UID 501. Both the source
+checkout and packaged/extracted path passed the same ordinary-file inside-write
+and outside-create/overwrite contract. Python reported `PermissionError`, errno
+1; shell redirection reported `Operation not permitted` and operation exit 1.
+All payloads completed, and the controller independently checked the expected
+inside bytes, unchanged outside sentinel, and absent outside new file.
+
+The macOS policy's only explicit writable directory is the case workspace,
+with HOME and temporary paths redirected
+there. MXC's generated profile additionally grants standard device and terminal
+access, system/developer reads, and baseline Mach lookups. The exact allowances
+are recorded in [executor policy limits](executors.md#capability-and-platform-limits)
+and retained with each native run. They prevent treating the narrow experiment
+as proof that all filesystem writes are confined to the workspace.
 
 ## Comparable native experiments
 
@@ -183,8 +202,9 @@ work succeeded, the relevant outside object was independently checked, and no
 alternate effect escaped. Preserve unexpected outside effects as failures even
 if the command returned an error.
 
-Current status: Windows executors are available from the clone, and narrow
-non-elevated direct-write evidence is recorded. No candidate is qualified for
+Current status: Windows and macOS executors are available from the clone, and
+narrow non-elevated direct-write evidence is recorded on ARM64 hosts for both
+platforms. Native macOS x64 execution is untested. No candidate is qualified for
 the complete Meadow boundary. [Results](results.md) distinguish the completed
 cases from unsupported, unreached, and untested behavior.
 

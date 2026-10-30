@@ -1,0 +1,4 @@
+/Users/runner/work/meadow-confinement-lab/meadow-confinement-lab/artifacts/mxc-macos-x64/mxc-exec-mac:
+	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1351.0.0)
+	/usr/lib/libsandbox.1.dylib (compatibility version 1.0.0, current version 1.0.0)
+	/usr/lib/libiconv.2.dylib (compatibility version 7.0.0, current version 7.0.0)

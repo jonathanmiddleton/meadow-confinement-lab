@@ -14,7 +14,7 @@ def main(argv: list[str] | None = None) -> int:
     commands = parser.add_subparsers(dest="command", required=True)
     inventory = commands.add_parser("environment", help="Collect host facts; does not test confinement")
     inventory.add_argument("--output", type=Path, help="Write a new JSON report instead of stdout")
-    experiment = commands.add_parser("experiment", help="Run controlled Windows direct-write witnesses")
+    experiment = commands.add_parser("experiment", help="Run controlled Windows or macOS direct-write witnesses")
     experiment.add_argument("--output-root", type=Path, required=True, help="New directory for disposable fixtures and retained evidence")
     experiment.add_argument("--executor", type=Path, help="Override the bundled, manifest-verified executor")
     bundle = commands.add_parser("build", help="Build a portable ZIP using Python only")

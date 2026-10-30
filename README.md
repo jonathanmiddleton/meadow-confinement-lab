@@ -4,11 +4,12 @@ Standalone investigation of OS-enforced workspace write confinement for Meadow
 on Windows and macOS. The deployment target is ordinary, non-elevated Python
 with no required WSL, container service, compiler, or administrator setup.
 
-**Current result:** on our Windows 11 ARM64 host, Python and Windows PowerShell
-started inside MXC's native process container, wrote inside the workspace, and
-received access denied for direct creation and overwrite of sibling files.
+**Current result:** on the tested Windows 11 ARM64 and macOS 15.6 ARM64 hosts,
+Python and the platform shell started under MXC, wrote inside the workspace, and
+received OS denials for direct creation and overwrite of sibling files. Windows
+used native process containers and PowerShell; macOS used Seatbelt and `/bin/sh`.
 Matching unconfined controls could perform those same outside writes. This is a
-narrow feasibility result; full actor confinement and macOS remain unestablished.
+narrow feasibility result; full actor confinement remains unestablished.
 See [results and limits](docs/results.md).
 
 ## Clone and run on Windows
@@ -32,14 +33,40 @@ The pinned upstream lists Windows 11 24H2 build 26100.9278 or later, or 25H2 bui
 26200.9278 or later. Actual process launch and write results determine success;
 the version and capability probe alone do not. The lab does not install Windows
 features, request elevation, change PowerShell execution policy, or fall back to
-an unconfined launch. macOS currently supports environment collection only.
+an unconfined launch.
+
+## Run on macOS
+
+Use Python 3.11+ in an ordinary terminal on macOS 15 or later:
+
+```text
+python3 investigate.py environment --output evidence/macos-host.json
+python3 investigate.py experiment --output-root runs/macos-direct-write-01
+```
+
+The macOS path selects `native/macos-arm64/mxc-exec-mac` or
+`native/macos-x64/mxc-exec-mac` from Python's reported architecture. The committed
+executors have successful build manifests matching the source pin, size, and
+SHA-256; each run verifies them. No Rust, Xcode, package installation, or installed
+sandbox service is required to run the lab. Native execution has been observed
+for ARM64; the x64 executor is built but has not been executed.
+
+Python and `/bin/sh` run paired controls and Seatbelt cases. Python uses
+`Path.write_bytes`; the shell uses direct redirection and retains the operation
+exit and OS diagnostic. HOME and temporary directories are inside the workspace.
+The policy has no explicit writable directory outside the workspace, but pinned
+Seatbelt includes device and terminal allowances; see
+[policy limits](docs/executors.md#capability-and-platform-limits). A pass concerns
+the tested ordinary-file operations, not every filesystem object.
+
+## Experiment evidence
 
 Choose a new output directory for every experiment. All write targets are
 disposable files under that directory, divided into a workspace and its outside
 sibling. The unconfined control deliberately writes to both; the contained case
 must write inside and fail outside. No real source checkout or user file is a
-probe target. PowerShell executes controlled inline code calling
-`System.IO.File.WriteAllBytes`; Python uses `Path.write_bytes`.
+probe target. Windows PowerShell executes controlled inline code calling
+`System.IO.File.WriteAllBytes`.
 
 Each run retains `report.json`, policies, payloads, raw stdout/stderr, native logs,
 and independently observed file hashes. Exit 0 means the narrow cases passed;
@@ -61,11 +88,21 @@ python investigate.py build --output ../meadow-confinement-lab.zip
 This build needs only Python's standard library and normal user permissions. It
 packages the Python source, documentation, source pin, and verified committed
 executors into a new ZIP. Extract it and use the same commands above. The output
-parent must exist, and an existing ZIP is not overwritten.
+parent must exist, and an existing ZIP is not overwritten. On macOS, extract
+with a tool that restores the stored Unix executable permissions:
 
-Native MXC source compilation is a separate maintainer operation using Rust,
-MSVC, and the Windows SDK on GitHub-hosted Windows builders. The committed
-binaries are self-built and unsigned. Their manifests and build logs record
+```text
+/usr/bin/unzip ../meadow-confinement-lab.zip -d ../meadow-confinement-lab-portable
+```
+
+Python's `zipfile.extractall` does not restore these permissions. The controller
+reports a non-executable helper instead of changing its permissions silently.
+The ARM64 macOS direct-write experiment also passed from a ZIP extracted with
+`/usr/bin/unzip`; see the retained [results](docs/results.md).
+
+Native MXC source compilation is a separate maintainer operation using Rust and
+platform developer tools on GitHub-hosted builders. The executors are lab builds
+of pinned upstream source. Their manifests and build logs record
 source/toolchain identity and hashes; these establish provenance, not a complete
 security qualification. See [executor provenance](docs/executors.md).
 
@@ -78,7 +115,7 @@ python -m unittest discover -s tests -v
 Unit tests check the controller, evaluator, and package builder. The real native
 experiment supplies the separate OS evidence. The broader
 [investigation](docs/investigation.md) includes descendants, path aliases, other
-write operations, native-server tools, lifecycle, and macOS.
+write operations, native-server tools, lifecycle, and wider platform deployment.
 
 Microsoft MXC is pinned in [upstream.lock.json](upstream.lock.json) after removal
 of its older Windows fallback paths. Its published `v1.0.1` release is not

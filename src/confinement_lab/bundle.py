@@ -10,6 +10,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import stat
 from typing import Any
 import zipfile
 
@@ -74,6 +75,7 @@ def build_bundle(repo_root: Path, output: Path) -> dict[str, Any]:
     if output.exists():
         raise FileExistsError(output)
     content: dict[str, bytes] = {}
+    executable_members: set[str] = set()
 
     def include(path: Path) -> None:
         content[path.relative_to(repo).as_posix()] = _read_project_file(repo, path)
@@ -97,33 +99,49 @@ def build_bundle(repo_root: Path, output: Path) -> dict[str, Any]:
         include(path)
 
     artifacts = []
-    for architecture in ("x64", "arm64"):
-        directory = repo / "native" / ("windows-" + architecture)
-        executor = directory / "wxc-exec.exe"
+    for platform, architecture, executable_name in (
+        ("windows", "x64", "wxc-exec.exe"),
+        ("windows", "arm64", "wxc-exec.exe"),
+        ("macos", "x64", "mxc-exec-mac"),
+        ("macos", "arm64", "mxc-exec-mac"),
+    ):
+        directory = repo / "native" / f"{platform}-{architecture}"
+        executor = directory / executable_name
         if not directory.exists():
             continue
         if directory.is_symlink() or not directory.resolve().is_relative_to(repo):
             raise ValueError("native artifact directory must stay inside the repository")
         if not executor.is_file():
-            raise ValueError("native artifact directory has no built wxc-exec.exe: " + str(directory))
+            raise ValueError(f"native artifact directory has no built {executable_name}: " + str(directory))
         verified = verify_executor(executor, revision)
         if verified["architecture"] != architecture:
             raise ValueError("native artifact directory and manifest architectures disagree")
-        for name in ("wxc-exec.exe", "LICENSE.md", "manifest.json"):
+        for name in (executable_name, "LICENSE.md", "manifest.json"):
             include(directory / name)
         # Check the captured bytes, so a change between verification and reading
         # the archive inputs cannot silently substitute a different executable.
-        captured_hash = hashlib.sha256(content[executor.relative_to(repo).as_posix()]).hexdigest()
+        member = executor.relative_to(repo).as_posix()
+        captured_hash = hashlib.sha256(content[member]).hexdigest()
         if captured_hash != verified["sha256"]:
             raise ValueError("native helper changed while preparing the bundle")
-        artifacts.append({key: verified[key] for key in
-                          ("architecture", "upstream_revision", "sha256", "size")})
+        if platform == "macos":
+            executable_members.add(member)
+        artifacts.append({"platform": platform, **{key: verified[key] for key in
+                          ("architecture", "upstream_revision", "sha256", "size")}})
     if not artifacts:
         raise ValueError("no built native helper is available; source-only bundles are not supported")
 
     with zipfile.ZipFile(output, mode="x", compression=zipfile.ZIP_DEFLATED) as archive:
         for name in sorted(content):
-            archive.writestr(name, content[name])
+            if name in executable_members:
+                # Store executable metadata even when packaging from Windows.
+                # This changes the archive member, never the source file mode.
+                member_info = zipfile.ZipInfo(name)
+                member_info.create_system = 3  # Unix permissions in external_attr.
+                member_info.external_attr = (stat.S_IFREG | 0o755) << 16
+                archive.writestr(member_info, content[name], compress_type=zipfile.ZIP_DEFLATED)
+            else:
+                archive.writestr(name, content[name])
     archive_bytes = output.read_bytes()
     return {
         "schema_version": 1, "output": str(output), "size": len(archive_bytes),

@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 import re
 import secrets
+import shlex
 import stat
 from typing import Any, Literal
 
@@ -27,6 +28,7 @@ class Fixture:
     outside_new: Path
     python_payload: Path
     powershell_payload: Path
+    shell_payload: Path
     nonce: str
     sentinel_before: bytes
     written_bytes: bytes
@@ -39,6 +41,7 @@ class Fixture:
             "outside_new": str(self.outside_new),
             "python_payload": str(self.python_payload),
             "powershell_payload": str(self.powershell_payload), "nonce": self.nonce,
+            "shell_payload": str(self.shell_payload),
             "sentinel_before_base64": _b64(self.sentinel_before),
             "written_bytes_base64": _b64(self.written_bytes),
         }
@@ -67,6 +70,7 @@ def prepare_fixture(root: Path, nonce: str | None = None) -> Fixture:
         root=root, workspace=workspace, inside_file=workspace / "inside.bin",
         outside_sentinel=outside / "sentinel.bin", outside_new=outside / "new.bin",
         python_payload=workspace / "probe.py", powershell_payload=workspace / "probe.ps1",
+        shell_payload=workspace / "probe.sh",
         nonce=nonce,
         sentinel_before=b"confinement-lab original sentinel\x00" + nonce.encode("utf-8"),
         written_bytes=b"confinement-lab write witness\x00\xff\n" + nonce.encode("utf-8"),
@@ -75,6 +79,7 @@ def prepare_fixture(root: Path, nonce: str | None = None) -> Fixture:
     fixture.python_payload.write_text(_python_payload(fixture), encoding="utf-8")
     # A BOM lets Windows PowerShell 5 read non-ASCII paths correctly.
     fixture.powershell_payload.write_text(_powershell_payload(fixture), encoding="utf-8-sig")
+    fixture.shell_payload.write_text(_shell_payload(fixture), encoding="utf-8")
     return fixture
 
 
@@ -95,7 +100,7 @@ report = {"schema_version": 1, "event": "end", "nonce": config["nonce"], "langua
 print(json.dumps({"schema_version": 1, "event": "start", "nonce": config["nonce"]}), flush=True)
 report["effective_environment_paths"] = {
     name: os.environ.get(name)
-    for name in ("LOCALAPPDATA", "APPDATA", "TEMP", "TMP", "USERPROFILE")
+    for name in ("LOCALAPPDATA", "APPDATA", "TEMP", "TMP", "USERPROFILE", "HOME", "TMPDIR")
 }
 data = base64.b64decode(config["data"])
 for operation in ("inside", "outside_overwrite", "outside_create"):
@@ -117,6 +122,53 @@ print(json.dumps(report), flush=True)
 
 def _ps_literal(value: str) -> str:
     return "'" + value.replace("'", "''") + "'"
+
+
+def _shell_payload(fixture: Fixture) -> str:
+    # Shell redirection performs the target open. printf's octal escapes retain
+    # the same binary bytes as the interpreter witnesses, including NUL and FF.
+    data = "".join(f"\\0{byte:03o}" for byte in fixture.written_bytes)
+    start = {"schema_version": 1, "event": "start", "nonce": fixture.nonce}
+    finish = {"schema_version": 1, "event": "end", "nonce": fixture.nonce, "language": "sh"}
+    header = json.dumps(finish, ensure_ascii=True)[:-1] + ', "effective_environment_paths_base64": {'
+    lines = ["#!/bin/sh", "LC_ALL=C", "export LC_ALL", "data=" + shlex.quote(data), r'''
+encode() {
+    /usr/bin/base64 | /usr/bin/tr -d '\r\n'
+}
+attempt() {
+    operation=$1
+    target=$2
+    diagnostic_file=$3
+    (printf '%b' "$data" > "$target") 2> "$diagnostic_file"
+    operation_exit=$?
+    status=succeeded
+    if [ "$operation_exit" -ne 0 ]; then
+        diagnostic=$(/bin/cat "$diagnostic_file")
+        case "$diagnostic" in
+            *"$target: Permission denied"|*"$target: Operation not permitted") status=access_denied ;;
+            *) status=error ;;
+        esac
+    fi
+    printf ',"%s":{"reached":true,"status":"%s","returncode":%s' "$operation" "$status" "$operation_exit"
+    if [ "$operation_exit" -ne 0 ]; then
+        diagnostic_base64=$(encode < "$diagnostic_file")
+        printf ',"error":{"type":"ShellRedirectionError","returncode":%s,"stderr_base64":"%s"}' "$operation_exit" "$diagnostic_base64"
+    fi
+    printf '}'
+}
+''', "printf '%s\\n' " + shlex.quote(json.dumps(start, ensure_ascii=True)),
+             'home_base64=$(printf \'%s\' "${HOME-}" | encode)',
+             'tmpdir_base64=$(printf \'%s\' "${TMPDIR-}" | encode)',
+             "printf '%s' " + shlex.quote(header),
+             '''printf '"HOME":"%s","TMPDIR":"%s"}' "$home_base64" "$tmpdir_base64"''']
+    for operation, target in (("inside", fixture.inside_file),
+                              ("outside_overwrite", fixture.outside_sentinel),
+                              ("outside_create", fixture.outside_new)):
+        diagnostic = fixture.workspace / f"shell-{operation}.stderr.bin"
+        lines.append("attempt " + " ".join(shlex.quote(str(value))
+                                            for value in (operation, target, diagnostic)))
+    lines.append("printf '}\\n'")
+    return "\n".join(lines) + "\n"
 
 
 def _powershell_payload(fixture: Fixture) -> str:
@@ -188,12 +240,24 @@ def _observe(path: Path, expected: bytes) -> dict[str, Any]:
     return observation
 
 
-def _denial_has_os_evidence(attempt: dict[str, Any]) -> bool:
+def _denial_has_os_evidence(attempt: dict[str, Any], target: Path) -> bool:
     error = attempt.get("error")
     if not isinstance(error, dict):
         return False
     if error.get("type") == "PermissionError":
         return error.get("errno") in (1, 13) or error.get("winerror") == 5
+    if error.get("type") == "ShellRedirectionError":
+        code = error.get("returncode")
+        if type(code) is not int or not 0 < code <= 255:
+            return False
+        try:
+            diagnostic = base64.b64decode(error["stderr_base64"], validate=True).decode("utf-8")
+        except (KeyError, ValueError, TypeError):
+            return False
+        # Check the exact operation target and trailing OS diagnostic. A target
+        # merely containing denial words must not turn another error into a pass.
+        return any(diagnostic.rstrip("\n").endswith(f"{target}: {message}")
+                   for message in ("Permission denied", "Operation not permitted"))
     return (error.get("type") == "System.UnauthorizedAccessException"
             and error.get("hresult") == -2147024891)
 
@@ -239,6 +303,15 @@ def evaluate_fixture(
     ends = [r for r in records if r.get("event") == "end" and r.get("schema_version") == 1]
     complete = len(starts) == len(ends) == 1 and records.index(starts[0]) < records.index(ends[0])
     child_report = ends[0] if len(ends) == 1 else None
+    if child_report is not None and child_report.get("language") == "sh":
+        try:
+            encoded_paths = child_report["effective_environment_paths_base64"]
+            child_report["effective_environment_paths"] = {
+                name: base64.b64decode(encoded_paths[name], validate=True).decode("utf-8")
+                for name in ("HOME", "TMPDIR")
+            }
+        except (KeyError, ValueError, TypeError):
+            reasons.append("invalid_shell_environment_evidence")
     if not complete:
         reasons.append("missing_or_ambiguous_correlated_start_end")
     if returncode != 0:
@@ -255,7 +328,9 @@ def evaluate_fixture(
             expected_status = "succeeded" if name == "inside" or mode == "control" else "access_denied"
             if attempt.get("status") != expected_status:
                 reasons.append(name + "_unexpected_status")
-            elif expected_status == "access_denied" and not _denial_has_os_evidence(attempt):
+            elif expected_status == "access_denied" and not _denial_has_os_evidence(
+                attempt, fixture.outside_sentinel if name == "outside_overwrite" else fixture.outside_new
+            ):
                 reasons.append(name + "_missing_os_denial_evidence")
 
     outside_violation = mode == "enforce" and (

@@ -1,0 +1,23 @@
+Executable=/Users/runner/work/meadow-confinement-lab/meadow-confinement-lab/artifacts/mxc-macos-arm64/mxc-exec-mac
+Identifier=mxc_exec_mac-61f55e34baf2a89b
+Format=Mach-O thin (arm64)
+CodeDirectory v=20400 size=27160 flags=0x20002(adhoc,linker-signed) hashes=845+0 location=embedded
+VersionPlatform=1
+VersionMin=983040
+VersionSDK=984320
+Hash type=sha256 size=32
+CandidateCDHash sha256=f8c9b24f737060e593492130c3a01f7489b7a852
+CandidateCDHashFull sha256=f8c9b24f737060e593492130c3a01f7489b7a852341319ca175eec3e5ecaad15
+Hash choices=sha256
+CMSDigest=f8c9b24f737060e593492130c3a01f7489b7a852341319ca175eec3e5ecaad15
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=2605056
+Executable Segment flags=0x1
+Page size=4096
+CDHash=f8c9b24f737060e593492130c3a01f7489b7a852
+Signature=adhoc
+Info.plist=not bound
+TeamIdentifier=not set
+Sealed Resources=none
+Internal requirements=none

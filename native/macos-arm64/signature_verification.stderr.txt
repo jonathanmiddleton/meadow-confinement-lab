@@ -1,0 +1,2 @@
+/Users/runner/work/meadow-confinement-lab/meadow-confinement-lab/artifacts/mxc-macos-arm64/mxc-exec-mac: valid on disk
+/Users/runner/work/meadow-confinement-lab/meadow-confinement-lab/artifacts/mxc-macos-arm64/mxc-exec-mac: satisfies its Designated Requirement

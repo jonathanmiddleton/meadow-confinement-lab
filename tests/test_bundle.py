@@ -3,6 +3,7 @@
 import hashlib
 import json
 from pathlib import Path
+import stat
 import subprocess
 import sys
 import tempfile
@@ -51,6 +52,21 @@ class BundleTests(unittest.TestCase):
     def write_manifest(self):
         (self.native / "manifest.json").write_text(json.dumps(self.manifest), encoding="utf-8")
 
+    def create_macos_artifact(self, architecture):
+        directory = self.repo / "native" / f"macos-{architecture}"
+        directory.mkdir()
+        executable = directory / "mxc-exec-mac"
+        executable.write_bytes(b"synthetic macOS output; never execute: " + architecture.encode("ascii"))
+        (directory / "LICENSE.md").write_text("Synthetic license", encoding="utf-8")
+        manifest = {
+            "schema_version": 1, "status": "built", "build_exit_code": 0,
+            "upstream_revision": self.revision, "architecture": architecture,
+            "files": [{"name": executable.name, "bytes": executable.stat().st_size,
+                       "sha256": hashlib.sha256(executable.read_bytes()).hexdigest()}],
+        }
+        (directory / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+        return executable
+
     def test_bundle_excludes_private_and_generated_files_and_runs_after_extract(self):
         secret = b"secret-sentinel-not-for-distribution-957e"
         for relative in (".git/config", "evidence/host.json", "build/compiler.log",
@@ -71,6 +87,39 @@ class BundleTests(unittest.TestCase):
                                 capture_output=True, text=True, check=False)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.strip(), "portable-source-runs")
+
+    def test_macos_artifacts_retain_bytes_and_executable_zip_permissions(self):
+        executables = [self.create_macos_artifact(architecture)
+                       for architecture in ("x64", "arm64")]
+        source_modes = [executable.stat().st_mode for executable in executables]
+        summary = build_bundle(self.repo, self.output)
+        self.assertEqual(len(summary["artifacts"]), 3)
+        with zipfile.ZipFile(self.output) as archive:
+            self.assertIn("native/windows-x64/wxc-exec.exe", archive.namelist())
+            for executable, source_mode in zip(executables, source_modes):
+                member = executable.relative_to(self.repo).as_posix()
+                with self.subTest(member=member):
+                    self.assertEqual(archive.read(member), executable.read_bytes())
+                    self.assertIn(Path(member).with_name("manifest.json").as_posix(),
+                                  archive.namelist())
+                    self.assertIn(Path(member).with_name("LICENSE.md").as_posix(),
+                                  archive.namelist())
+                    info = archive.getinfo(member)
+                    self.assertEqual(info.create_system, 3)
+                    self.assertEqual(info.external_attr >> 16, stat.S_IFREG | 0o755)
+                    self.assertEqual(executable.stat().st_mode, source_mode)
+                    receipt = next(artifact for artifact in summary["artifacts"]
+                                   if artifact["platform"] == "macos"
+                                   and artifact["architecture"] == executable.parent.name.removeprefix("macos-"))
+                    self.assertEqual(receipt["sha256"], hashlib.sha256(archive.read(member)).hexdigest())
+
+    def test_changed_macos_helper_is_rejected_before_archive_creation(self):
+        executable = self.create_macos_artifact("arm64")
+        original = executable.read_bytes()
+        executable.write_bytes(bytes([original[0] ^ 1]) + original[1:])
+        with self.assertRaisesRegex(ValueError, "bytes do not match"):
+            build_bundle(self.repo, self.output)
+        self.assertFalse(self.output.exists())
 
     def test_changed_helper_is_rejected_before_archive_creation(self):
         original = self.executor.read_bytes()
