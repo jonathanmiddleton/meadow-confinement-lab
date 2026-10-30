@@ -2,6 +2,12 @@ name: Build pinned MXC executors
 
 on:
   workflow_dispatch:
+    inputs:
+      platform:
+        description: Executor platforms to build
+        type: choice
+        default: all
+        options: [all, windows, macos]
   push:
     tags: ['mxc-build-*']
 
@@ -11,6 +17,7 @@ permissions:
 jobs:
   build:
     name: Windows ${{ matrix.architecture }}
+    if: github.event_name != 'workflow_dispatch' || inputs.platform != 'macos'
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     strategy:
@@ -57,5 +64,54 @@ jobs:
         with:
           name: mxc-windows-${{ matrix.architecture }}
           path: artifacts/mxc-windows-${{ matrix.architecture }}/
+          if-no-files-found: error
+          retention-days: 14
+
+  build-macos:
+    name: macOS ${{ matrix.architecture }}
+    if: github.event_name != 'workflow_dispatch' || inputs.platform != 'windows'
+    runs-on: macos-15
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - architecture: arm64
+            target: aarch64-apple-darwin
+          - architecture: x64
+            target: x86_64-apple-darwin
+    steps:
+      - name: Check out investigation
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Check out pinned MXC
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: microsoft/mxc
+          ref: b4c1007502835d958ab291d332b929187be00440
+          path: upstream
+          persist-credentials: false
+
+      - name: Install build toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f
+        with:
+          toolchain: '1.93'
+          target: ${{ matrix.target }}
+          rustflags: ''
+          cache: 'false'
+          override: false
+          build-warnings: ''
+
+      - name: Build and record provenance
+        run: python3 scripts/build_mxc_macos.py --architecture '${{ matrix.architecture }}' --upstream-directory ./upstream
+
+      - name: Upload executor and build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: mxc-macos-${{ matrix.architecture }}
+          path: artifacts/mxc-macos-${{ matrix.architecture }}/
           if-no-files-found: error
           retention-days: 14
