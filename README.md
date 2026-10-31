@@ -118,7 +118,9 @@ Native MXC source compilation is a separate maintainer operation using Rust and
 platform developer tools on GitHub-hosted builders. The executors are lab builds
 of pinned upstream source. Their manifests and build logs record
 source/toolchain identity and hashes; these establish provenance, not a complete
-security qualification. See [executor provenance](docs/executors.md).
+security qualification. The macOS rebuild recipe additionally applies a
+maintained POSIX semaphore patch and records its hash separately from the
+upstream revision. See [executor provenance](docs/executors.md).
 
 ## Development and investigation
 

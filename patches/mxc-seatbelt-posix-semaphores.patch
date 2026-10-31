@@ -1,0 +1,12 @@
+diff --git a/src/mxc-sdk/src/backends/seatbelt/common/profile_builder.rs b/src/mxc-sdk/src/backends/seatbelt/common/profile_builder.rs
+--- a/src/mxc-sdk/src/backends/seatbelt/common/profile_builder.rs
++++ b/src/mxc-sdk/src/backends/seatbelt/common/profile_builder.rs
+@@ -141,6 +141,8 @@ const BASELINE_ALLOW: &str = "\
+ ;; --- baseline (required for any process to start) ---
+ (allow process-fork)
+ (allow process-exec)
++;; POSIX runtime synchronization uses named semaphores.
++(allow ipc-posix-sem)
+ (allow signal (target same-sandbox))
+ (allow sysctl-read)
+ (allow file-read-metadata)

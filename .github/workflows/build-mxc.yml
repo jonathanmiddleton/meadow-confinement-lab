@@ -104,8 +104,8 @@ jobs:
           override: false
           build-warnings: ''
 
-      - name: Build and record provenance
-        run: python3 scripts/build_mxc_macos.py --architecture '${{ matrix.architecture }}' --upstream-directory ./upstream
+      - name: Apply maintained semaphore patch, build and record provenance
+        run: python3 scripts/build_mxc_macos.py --architecture '${{ matrix.architecture }}' --upstream-directory ./upstream --apply-semaphore-patch
 
       - name: Upload executor and build evidence
         if: always()

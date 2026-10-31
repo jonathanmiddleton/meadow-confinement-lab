@@ -124,6 +124,23 @@ architectures, and set `MACOSX_DEPLOYMENT_TARGET=15.0`. No host-preparation scri
 or elevation is part of the build. These developer tools are build dependencies;
 the resulting lab deployment uses the committed executors.
 
+The macOS recipe applies the maintained
+[POSIX semaphore patch](../patches/mxc-seatbelt-posix-semaphores.patch) to a
+clean, explicitly selected disposable MXC checkout. The patch adds
+`(allow ipc-posix-sem)` for ordinary runtime synchronization; it changes no
+filesystem rule. The manifest preserves the upstream base revision and records
+the applied patch's name, bytes, and SHA-256 in `source_patches`. The artifact
+includes the patch itself. Compilation must leave source exactly in its prepared
+patched state. The recipe leaves that patch applied for inspection; use a fresh
+disposable checkout for another build. This build recipe does not establish
+confinement results for newly built binaries.
+
+On a macOS developer host with Rust 1.93 and the matching Apple target:
+
+```text
+python3 scripts/build_mxc_macos.py --architecture arm64 --upstream-directory /tmp/mxc-build --apply-semaphore-patch
+```
+
 For a developer-host rebuild, obtain a clean checkout at the source pin and use
 [scripts/build_mxc.ps1](../scripts/build_mxc.ps1):
 

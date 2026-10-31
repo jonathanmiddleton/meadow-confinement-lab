@@ -2,15 +2,15 @@
 """Build the pinned macOS executor and retain compilation-only provenance."""
 
 import argparse
-from datetime import datetime, timezone
 import hashlib
 import json
 import os
-from pathlib import Path
 import platform
 import shutil
 import subprocess
 import sys
+from datetime import UTC, datetime
+from pathlib import Path
 
 
 def file_receipt(path: Path) -> dict:
@@ -19,10 +19,35 @@ def file_receipt(path: Path) -> dict:
 
 
 def checked_text(command: list[str], cwd: Path | None = None) -> str:
-    result = subprocess.run(command, cwd=cwd, capture_output=True, text=True)
+    result = subprocess.run(command, cwd=cwd, capture_output=True, text=True, check=False)
     if result.returncode:
         raise RuntimeError(f"{command[0]} exited {result.returncode}: {result.stderr.strip()}")
     return result.stdout.strip()
+
+
+def source_state(upstream: Path) -> tuple[str, str, str]:
+    """Capture the revision and all nonignored source changes around compilation."""
+    git = ["git", "-C", str(upstream)]
+    return (
+        checked_text([*git, "rev-parse", "HEAD"]),
+        checked_text([*git, "diff", "--binary", "HEAD"]),
+        checked_text([*git, "status", "--porcelain=v1", "--untracked-files=all"]),
+    )
+
+
+def prepare_patched_source(upstream: Path, patch: Path) -> tuple[str, str, str]:
+    """Apply the maintained patch only to the explicitly selected clean checkout."""
+    if source_state(upstream)[2]:
+        raise RuntimeError("MXC checkout must be clean before applying the maintained patch.")
+    checked_text(["git", "-C", str(upstream), "apply", "--check", str(patch)])
+    checked_text(["git", "-C", str(upstream), "apply", str(patch)])
+    return source_state(upstream)
+
+
+def verify_source_unchanged(upstream: Path, prepared: tuple[str, str, str]) -> None:
+    """Reject compiler-side source changes beyond the recorded maintained patch."""
+    if source_state(upstream) != prepared:
+        raise RuntimeError("MXC build changed source beyond the maintained patch.")
 
 
 def main() -> int:
@@ -30,6 +55,8 @@ def main() -> int:
     parser.add_argument("--architecture", choices=("arm64", "x64"), required=True)
     parser.add_argument("--upstream-directory", type=Path, required=True)
     parser.add_argument("--output-directory", type=Path)
+    parser.add_argument("--apply-semaphore-patch", action="store_true", required=True,
+                        help="Apply the maintained patch to the selected disposable MXC checkout.")
     args = parser.parse_args()
     lab = Path(__file__).resolve().parents[1]
     upstream = args.upstream_directory.resolve(strict=True)
@@ -41,7 +68,7 @@ def main() -> int:
                "--target", target, "--color", "never"]
     receipt = {
         "schema_version": 1, "status": "building", "confinement_status": "not_tested",
-        "started_at": datetime.now(timezone.utc).isoformat(), "platform": "Darwin",
+        "started_at": datetime.now(UTC).isoformat(), "platform": "Darwin",
         "architecture": args.architecture, "target": target, "build_exit_code": None,
         "command": {"executable": command[0], "arguments": command[1:],
                     "working_directory": "upstream/src"},
@@ -53,7 +80,7 @@ def main() -> int:
             ("repository", "GITHUB_REPOSITORY"), ("revision", "GITHUB_SHA"),
             ("run_id", "GITHUB_RUN_ID"), ("run_attempt", "GITHUB_RUN_ATTEMPT"),
             ("workflow_ref", "GITHUB_WORKFLOW_REF"))},
-        "files": [],
+        "source_patches": [], "files": [],
     }
 
     def save() -> None:
@@ -102,18 +129,23 @@ def main() -> int:
         receipt["cargo"] = checked_text(["cargo", "+1.93", "-V"], upstream / "src")
         receipt["clang"] = checked_text(["xcrun", "clang", "--version"])
         receipt["sdk_version"] = checked_text(["xcrun", "--sdk", "macosx", "--show-sdk-version"])
+        patch = lab / "patches/mxc-seatbelt-posix-semaphores.patch"
+        prepared_source = prepare_patched_source(upstream, patch)
+        receipt["source_patches"] = [file_receipt(patch)]
+        receipt["prepared_source_diff_sha256"] = hashlib.sha256(
+            prepared_source[1].encode("utf-8")).hexdigest()
+        shutil.copyfile(patch, output / patch.name)
         save()
         with (output / "build.log").open("wb") as log:
             built = subprocess.run(command, cwd=upstream / "src", env=build_environment,
-                                   stdout=log, stderr=subprocess.STDOUT)
+                                   stdout=log, stderr=subprocess.STDOUT, check=False)
         receipt["build_exit_code"] = built.returncode
         save()
         if built.returncode:
             raise RuntimeError(f"MXC build exited {built.returncode}; see build.log.")
-        clean = not checked_text(["git", "-C", str(upstream), "status", "--porcelain"])
-        receipt["upstream_clean_after"] = clean
-        if not clean:
-            raise RuntimeError("MXC build changed tracked or untracked source.")
+        verify_source_unchanged(upstream, prepared_source)
+        receipt["upstream_clean_after"] = not prepared_source[2]
+        receipt["source_unchanged_after_build"] = True
         executable = output / "mxc-exec-mac"
         shutil.copy2(upstream / "src/target" / target / "release/mxc-exec-mac", executable)
         receipt["observations"] = {}
@@ -124,7 +156,7 @@ def main() -> int:
             ("signature", ["codesign", "-d", "--verbose=4", str(executable)], False),
             ("signature_verification", ["codesign", "--verify", "--verbose=4", str(executable)], False),
         ):
-            result = subprocess.run(arguments, capture_output=True)
+            result = subprocess.run(arguments, capture_output=True, check=False)
             (output / f"{name}.stdout.txt").write_bytes(result.stdout)
             (output / f"{name}.stderr.txt").write_bytes(result.stderr)
             receipt["observations"][name] = {"command": arguments, "exit_code": result.returncode}
@@ -140,7 +172,7 @@ def main() -> int:
         print(str(failure), file=sys.stderr)
         return 1
     finally:
-        receipt["finished_at"] = datetime.now(timezone.utc).isoformat()
+        receipt["finished_at"] = datetime.now(UTC).isoformat()
         save()
 
 
